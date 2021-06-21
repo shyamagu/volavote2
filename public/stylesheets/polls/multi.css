@@ -1,0 +1,56 @@
+.multi_survey_line_area{
+    text-align: left;
+    width:650px;
+    height:70px;
+    margin:auto;
+}
+
+.multi_survey_button_area{
+    vertical-align:middle;
+    display: inline-block;
+    width:250px;
+    height:70px;
+}
+    .multi_survey_button{
+    width:240px;
+    height:60px;
+    font-size:20px;
+    background:#CCF;
+    margin-top:5px;
+    border:none;
+}
+
+.multi_survey_button_on{
+    background-color: #00F;
+    color:#FFF;
+}
+
+.multi_survey_bar_area{
+    vertical-align: middle;
+    display: inline-block;
+    width: 0px;
+    font-size: 16px;
+    color: #000;
+    background-color: #99F;
+    text-align: right;
+    padding:10px 0px 10px 0px;
+    transition-duration: .3s
+}
+
+@media screen and (max-width:700px){
+    .multi_survey_line_area{
+        width:320px;
+    }
+    
+    .multi_survey_button_area{
+        width:130px;
+    }
+    .multi_survey_button{
+        width:120px;
+        font-size: 16px;
+    }
+    
+    .multi_survey_bar_area{
+        width: 0px;
+    }
+}

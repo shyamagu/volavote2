@@ -1,0 +1,254 @@
+<div id="setting">
+  <div class="control_panel_title">
+    SETTING 
+    <img v-if="!settingShow" src="images/pushdown.svg" @click="setSettingShow(true)">
+    <img v-if="settingShow" src="images/pushup.svg"  @click="setSettingShow(false)">
+  </div>
+  
+  <transition-group name="settingAnime" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:before-leave="beforeLeave" v-on:leave="leave">
+  <div v-if="settingShow">
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+        {{getMessage('setting_anonymous_create_title')}}
+      </div>
+      <div class="manage_toggle">
+          <label class="switch">
+              <input type="checkbox" v-model="checkAnonymousCreate" @change="setAnonymousCreate">
+              <span class="slider round"></span>
+          </label>
+          {{checkAnonymousCreate? 'On':'Off'}}
+      </div>
+      <div class="manage_comp">
+          {{getMessage('setting_anonymous_create')}} <a href="/poll/create">/poll/create</a>
+      </div>
+    </div>
+
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+        {{getMessage('setting_require_poll_code_title')}}
+      </div>
+      <div class="manage_toggle">
+          <label class="switch">
+              <input type="checkbox" v-model="checkRequireCode" @change="setRequirePollCode">
+              <span class="slider round"></span>
+          </label>
+          {{checkRequireCode? 'On':'Off'}}
+      </div>
+      <div class="manage_comp">
+          {{getMessage('setting_require_poll_code_1')}} <div v-if="pollCode" class="poll_code_area">{{pollCode}}</div>
+          {{getMessage('setting_require_poll_code_2')}}
+      </div>
+    </div>
+
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+        {{getMessage('setting_require_user_name_title')}}
+      </div>
+      <div class="manage_toggle">
+          <label class="switch">
+              <input type="checkbox" v-model="checkRequireName" @change="setRequireUserName">
+              <span class="slider round"></span>
+          </label>
+          {{checkRequireName? 'On':'Off'}}
+      </div>
+      <div class="manage_comp">
+          {{getMessage('setting_require_user_name')}}
+      </div>
+    </div>
+
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+        {{getMessage('setting_export_import_title')}}
+      </div>
+      <div class="manage_toggle">
+          <button class="manage_button" @click="exportPoll()">export poll</button>
+          <button class="manage_button" @click="exportAll()">export all</button>
+          <input type="file" ref="file" style="display:none" accept="json" v-on:change="importSetting()" aria-label="import all"/>
+          <button class="manage_button" @click="$refs.file.click()">import</button>
+      </div>
+      <div class="manage_comp">
+        {{getMessage('setting_export_import')}}
+      </div>
+    </div>
+
+  </div>
+  </transition-group>
+</div>
+<script>
+  const codeString = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+  const Setting = {
+    data(){
+      return{
+        checkAnonymousCreate: false,
+        checkRequireCode:false,
+        checkRequireName:false,
+        pollCode:"",
+        errorMessage:"",
+        settingShow:false,
+        locale:'en',
+        message:{
+          en:{
+            setting_anonymous_create_title : "Anonymous Create Poll",
+            setting_require_poll_code_title : "Require Poll CODE",
+            setting_require_user_name_title : "Require User Name",
+            setting_export_import_title : "Export/Import",
+            setting_anonymous_create : "Anyone can create poll to access",
+            setting_require_poll_code_1 : "Require CODE",
+            setting_require_poll_code_2 : "to access a poll",
+            setting_require_user_name : "Require user name to access a poll",
+            setting_export_import : "Export and Import data",
+          },
+          ja:{
+            setting_anonymous_create_title : "匿名ユーザによる投票作成",
+            setting_require_poll_code_title : "投票コードの要求",
+            setting_require_user_name_title : "ユーザ名の要求",
+            setting_export_import_title : "データエクスポート/インポート",
+            setting_anonymous_create : "誰でも匿名で右のページから投票を作成できる ->",
+            setting_require_poll_code_1 : "投票サイトのアクセスに対してコード",
+            setting_require_poll_code_2 : "の入力を要求する",
+            setting_require_user_name : "投票サイトのアクセスに対してユーザ名の入力を要求する",
+            setting_export_import : "投票データ、全データのエクスポート、またはインポート",
+          }
+        },
+      }
+    },
+    mounted() {
+      const language = window.navigator.language
+      if(language){
+        this.locale = language.toLocaleLowerCase().split("-")[0]
+      }
+      this.getVolavoteSetting()
+    },
+    methods :{
+      getMessage(key){
+        return this.message[this.locale]? this.message[this.locale][key] : this.message['en'][key]
+      },
+      beforeEnter(el){
+        el.style.height = 0
+      },
+      enter(el){
+        el.style.height = el.scrollHeight + 'px'
+      },
+      beforeLeave(el){
+        el.style.height = el.scrollHeight + 'px'
+      },
+      leave(el){
+        el.style.height = 0
+      },
+      getVolavoteSetting(){
+        fetch('/admin/setting')
+        .then(response=>response.json())
+        .then(data=>{
+          //OK
+          if(data.result==="OK"){
+            this.checkAnonymousCreate = data.checkAnonymousCreate === 'true'
+            this.checkRequireCode = data.checkRequireCode === 'true'
+            this.pollCode = data.pollCode
+            this.checkRequireName = data.checkRequireName === 'true'
+          }
+        })
+        .catch(error=>{
+          this.errorMessage = error
+        })
+      },
+      setSettingShow(flag){
+        this.settingShow = flag
+      },
+      setAnonymousCreate(){
+          this.callSetSetting('ANONIMOUS_CREATE',this.checkAnonymousCreate.toString())
+      },
+      setRequirePollCode(){
+        this.callSetSetting('REQUIRE_CODE',this.checkRequireCode.toString())
+        if(this.checkRequireCode){
+          this.pollCode = Array.from(Array(6)).map(()=>codeString[Math.floor(Math.random()*codeString.length)]).join('')
+          this.callSetSetting('POLL_CODE',this.pollCode)
+        }else{
+          this.pollCode = ""
+        }
+      },
+      setRequireUserName(){
+        this.callSetSetting('REQUIRE_NAME',this.checkRequireName.toString())
+      },
+      callSetSetting(envName,valueStr){
+        fetch('/admin/setting',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({envName:envName,valueStr:valueStr})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+          //OK
+          if(data.result==="OK"){
+            this.getVolavoteSetting()
+          }
+          else if(data.result==="NG"){
+            this.errorMessage = data.error
+          }
+
+        })
+        .catch(error=>{
+          this.errorMessage = error
+        })
+      },
+      exportPoll(){
+        this.exportFromServer(["POLL"])
+      },
+      exportAll(){
+        this.exportFromServer(["SETTING","POLL","PARENT","USER"])
+      },
+      exportFromServer(types){
+        fetch('/admin/export',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({types:types})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+          //OK
+          if(data.result==="OK"){
+            let blob = new Blob([JSON.stringify(data.export)],{type:'application/json'})
+            let link = document.createElement('a')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = 'volavote_export_'+types.join('_')+Date.now()+'.json'
+            link.click()
+          }
+          else if(data.result==="NG"){
+            this.errorMessage = data.error
+          }
+
+        })
+        .catch(error=>{
+          this.errorMessage = error
+        })
+      },
+      importSetting(){
+        const file = this.$refs.file.files[0]
+          if(file){
+            const reader = new FileReader();
+            reader.onload = e =>{
+              const importedJson = JSON.parse(e.target.result)
+              fetch("/admin/import",{
+              method:'POST',
+              headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({import:importedJson})
+              })
+              .then(response=>response.json())
+              .then(data=>{
+                if(data.result==="OK"){
+                  this.getVolavoteSetting()
+                }else{
+                  this.errorMessage = "Import Error"
+                }
+              })
+              .catch(error=>{
+                this.errorMessage = error
+              })
+
+            }
+            reader.readAsText(file)
+          }
+      }
+    }
+  }
+  Vue.createApp(Setting).mount('#setting')
+</script>

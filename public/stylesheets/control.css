@@ -1,0 +1,438 @@
+* {
+    margin:0px;
+    padding:0px;
+}
+
+body{
+    background-color: #f2f2f2;
+}
+
+.control_header{
+    width:100%;
+    background-color: #333;
+    padding: 20px 0px;
+}
+
+.control_name_filed{
+    width:100%;
+    text-align: right;
+    font-size:20px;
+}
+
+.control_icon{
+    vertical-align: middle;
+    width:48px;
+    height:24px;
+}
+
+.header_title{
+    width:90%;
+    font-size: 36px;
+    color:#999;
+    margin:auto;
+}
+
+.control_header_image{
+    width:48px;
+    vertical-align: text-top;
+}
+
+.control_body{
+    width:100%;
+    padding-top: 30px;
+    padding-bottom: 50px;
+}
+
+.control_panel_title{
+    width:90%;
+    max-width: 1000px;
+    margin:15px auto 5px auto;
+    font-size: 24px;
+}
+
+.head_manage_field{
+    width:90%;
+    max-width: 1000px;
+    min-width: 1000px;
+    color:#669;
+    background-color: #CCE;
+    margin:auto;
+}
+
+.manage_field{
+    width:90%;
+    max-width: 1000px;
+    min-width: 1000px;
+    background-color: #FFF;
+    margin:auto;
+    padding-top:10px;
+    padding-bottom: 5px;
+}
+
+.button_field{
+    width:90%;
+    max-width: 1000px;
+    margin:auto;
+    text-align: right;
+}
+
+.manage_button{
+    font-size: 20px;
+    color:#FFF;
+    background-color:#99C;
+    border: 1px solid #669;
+    margin:0px 10px 3px 10px;
+    padding: 5px 15px;
+    border-radius:2px;
+}
+
+.manage_button:hover{
+    background-color:#AAD;
+}
+
+.create_button{
+    font-size: 20px;
+    color:#FFF;
+    background-color:#99C;
+    border: 1px solid #669;
+    margin:10px 10px 0px 10px;
+    padding: 10px 15px;
+    border-radius:2px;
+}
+
+.create_button:hover{
+    background-color:#AAD;
+}
+
+.manage_title{
+    display: inline-block;
+    width:40%;
+    font-size:20px;
+    margin:5px 0px 5px 25px;
+}
+
+.manage_toggle{
+    font-size: 20px;
+    vertical-align:top;
+    display: inline-block;
+    width:40%;
+    text-align: right;
+    margin:5px 5px 5px 25px;
+}
+
+.manage_comp{
+    font-size:16px;
+    color:#999;
+    width:90%;
+    margin:5px 0px 10px 25px;
+    border-bottom: 1px solid #999;
+}
+
+.poll_list{
+    width:100%;
+    font-size:20px;
+    margin:5px auto;
+    border-bottom: 1px solid #EEE;
+}
+
+.no_poll_list{
+    color:#999;
+    font-size:20px;
+    text-align: center;
+}
+
+.poll_list_item{
+    display: inline-block;
+    margin:5px 5px 10px 5px;
+    vertical-align: middle;
+    word-break: break-all;
+}
+
+.pli_button_f{
+    width:5%;
+    min-width:55px;
+    margin-left: 20px;
+    margin-right:5px;
+    text-align:center;
+}
+
+.pli_button{
+    width:30px;
+    font-size:16px;
+}
+
+.pli_title_f{
+    width:25%;
+    min-width: 200px;
+    font-size: 18px;
+}
+
+.pli_f_head{
+    text-align: center;
+}
+
+.pli_type_f{
+    width:4%;
+    min-width:36px;
+    font-size:16px;
+    text-align: center;
+}
+
+.pli_constraint_f{
+    width:5%;
+    min-width:45px;
+    font-size:16px;
+    text-align: center;
+}
+
+.pli_detail{
+    width:19%;
+    min-width:180px;
+    font-size:16px;
+}
+
+.pli_one_result{
+    margin-right: 5px;
+}
+
+.pli_parent_f{
+    width:7%;
+    min-width:63px;
+    font-size:16px;
+    text-align: center;
+}
+
+.pli_action_f{
+    width:25%;
+    min-width:200px;
+    font-size:16px;
+}
+
+.pli_action_button{
+    width:30px;
+    margin-left:10px;
+}
+
+.pli_action_btn_done{
+    background-color: #999;
+}
+
+.twentyfourx{
+    width:24px;
+    height:24px;
+}
+
+.parent_name{
+    display: inline-block;
+    width:50%;
+    font-size:22px;
+    margin: 5px auto 20px 25px;
+    border-bottom: 1px solid #999;
+}
+
+.no_parent_name{
+    color:#999;
+    font-size:20px;
+    text-align: center;
+}
+
+.parent_action_button_f{
+    display: inline-block;
+}
+
+.parent_action_button{
+    width:30px;
+}
+
+.overflowable{
+    min-height:50px;
+    max-height:380px;
+    overflow: auto;
+}
+
+.fade-enter-active {
+    height:100%;
+    transition: all 0.5s ease;
+}
+.fade-leave-active {
+    height:100%;
+    transition: all 0.5s ease-out;
+}
+
+.fade-enter-from{
+    height:0px;
+}
+.fade-leave-to {
+    height:0px;
+    opacity: 0
+}
+
+
+.settingAnime-enter-active {
+    transition: all 0.3s ease;
+}
+.settingAnime-leave-active {
+    transition: all 0.3s ease-out;
+}
+
+.poll_code_area{
+    display: inline-block;
+    color:#000;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: #FF9;
+    margin:0px 10px 0px 10px;
+    padding: 0px 10px;
+}
+
+.make_form{
+    width:80%;
+    max-width: 600px;
+    background-color: #FFF;
+    margin: 10px auto 30px auto;
+    padding-top:30px;
+    padding-bottom:30px;
+    box-shadow: 0px 2px 5px rgba(0,0,0,.25);
+}
+
+
+.make_input_field{
+    width:80%;
+    margin:auto;
+    padding-bottom: 10px;
+}
+
+.make_input{
+    width:100%;
+    font-size: 20px;
+    border: none;
+    border-bottom: 1px solid #AAA;
+    padding: 20px 0px 20px 0px;
+    margin-bottom: 20px;
+}
+
+.make_input_sub{
+    color:#999;
+    width:50%;
+    font-size: 16px;
+    border: none;
+}
+
+.make_input_2nd{
+    padding: 5px 0px 10px 0px;
+    margin-bottom: 10px;
+}
+
+.make_input:focus {
+    outline: none;
+}
+
+.poll_answer{
+    font-size: 20px;
+    color:#333;
+    padding:5px 20px;
+}
+
+.poll_answer_check{
+    font-size:20px;
+}
+
+.poll_bottom{
+    border-bottom: 1px solid #AAA;
+}
+
+::placeholder{
+    color:#99F;
+}
+
+select:invalid {
+    color:#99F;
+}
+
+.add_button{
+    font-size:20px
+}
+
+.cancel_button{
+    font-size:20px;
+    background-color: #999;
+}
+
+.cancel_button:hover{
+    background-color:#CCC;
+}
+
+.poll_select{
+    font-size: 20px;
+    color:#666;
+    display: inline-block;
+    margin: auto;
+    width: 100%;
+    background-color: transparent;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    border:none;
+    border-bottom: 1px solid #AAA;
+    padding: 20px 0px;
+    margin-bottom: 20px;
+}
+/*スクロールバーの横幅指定*/
+.overflowable::-webkit-scrollbar {
+    width: 15px;
+}
+/*スクロールバーの背景色・角丸指定*/
+.overflowable::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: #f2f2f2;
+}
+/*スクロールバーの色・角丸指定*/
+.overflowable::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+	background:#99C;
+}
+
+.message_for_user{
+    width:90%;
+    max-width: 1000px;
+    text-align: center;
+    background-color: #DDE;
+    font-size:24px;
+    padding:10px;
+    margin:30px auto;
+}
+
+.transp{
+    background-color: #f2f2f2;
+}
+
+@media screen and (max-width:700px){
+    .control_header{
+        padding: 10px 0px;
+    }
+
+    .header_title{
+        font-size: 24px;
+    }
+
+    .control_header_image{
+        width:32px;
+        vertical-align: middle;
+    }
+
+    .manage_title{
+        font-size:20px;
+    }
+    
+    .manage_toggle{
+        font-size: 18px;
+    }
+    
+    .manage_comp{
+        font-size:16px;
+    }
+
+    .smapho_w{
+        min-width:initial;
+    }
+}

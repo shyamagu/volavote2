@@ -1,0 +1,26 @@
+.qr_body{
+    width:100%;
+    padding-top: 30px;
+    padding-bottom: 50px;
+    text-align: center;
+}
+
+.qr_title{
+    width:60%;
+    min-width:700px;
+    font-size: 36px;
+    margin:20px auto;
+    text-align: center;
+}
+
+@media screen and (max-width:700px){
+    .header_title{
+        font-size: 24px;
+    }
+
+    .qr_title{
+        width:95%;
+        min-width:initial;
+        font-size: 28px;
+    }
+}

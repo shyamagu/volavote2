@@ -1,0 +1,42 @@
+.map_area{
+    margin:auto;
+    margin-top:50px;
+    position: relative;
+}
+
+.map_point_default{
+    width:10px;
+    height:10px;
+    position:absolute;
+    pointer-events:none;
+    background-color: #FF000080;
+    border-radius: 40% 60% 0% 80% / 40% 80% 0% 60%;
+    transform: rotate(45deg);
+}
+
+.map_point_default::before {
+    content: '';
+    position: absolute;
+    top: 18%;
+    left: 18%;
+    width: 4px;
+    height: 4px;
+    background: #FFFFFF99;
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+
+@keyframes pin_animation{
+    0% {
+      opacity:0; 
+    } 
+    100% {
+      opacity:1;
+    } 
+  } 
+  .map_pin_anime{
+    animation-name: pin_animation ; 
+    animation-duration: .2s;
+    animation-fill-mode: both;  
+    animation-iteration-count: 3;
+}

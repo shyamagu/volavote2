@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title><%= title %></title>
+    <!-- <script src="https://unpkg.com/vue@next"></script> -->
+    <script src="https://unpkg.com/vue@3.1.1/dist/vue.global.prod.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/poll.css' />
+    <link rel='stylesheet' href='/stylesheets/polls/map.css' />
+  </head>
+  <body>
+    <%- include('../partial/poll_header'); %>
+
+    <div id="poll" class="poll_body">
+      <div class="poll_title">{{title}}</div>
+      <div v-if="errorMessage" class="error_message">{{errorMessage}}</div>
+      <div class="map_area" :style="`width:${width}px;`">
+        <img @click="onClickMap" v-bind:src="image" :style="`width:${width}px;`"/>
+        <div v-for="position in positions" class="map_point_default map_pin_anime":style="`top:${position[1]-13}px;left:${position[0]-5}px;`" >
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    const socket = io();
+    const Poll = {
+      data(){
+        return{
+          title:'<%= title %>',
+          vvid: '<%= vvid %>',
+          image:'<%= image %>',
+          width:'<%= width %>',
+          number: Number('<%= number %>'),
+          displays:JSON.parse('<%- JSON.stringify(displays) %>'),
+          parent:'<%= parent %>',
+          errorMessage:"",
+          positions:[],
+          lock:'<%= lock %>',
+        }
+      },
+      mounted() {
+        this.positions = []
+        socket.emit('pollCountUp',this.vvid)
+        socket.on('pollCountUp',(countUp)=>{
+          if(countUp.VVID===this.vvid){
+            this.positions = countUp.COUNTUP
+          }
+        })
+        socket.on('switchToUrl',(switchData)=>{
+          if(switchData.from==="volavote" || switchData.from===this.parent){
+            window.location.href=switchData.url
+          }
+        })
+      },
+      methods :{
+        onClickMap(e){
+          const position = [e.offsetX,e.offsetY]
+          this.vote(position)
+        },
+        vote(position){          
+          if(this.lock==="true"){
+            //this.voted = new Array(this.number).fill(0)
+            this.errorMessage = "LOCKED"
+            return
+          }
+          this.errorMessage = ""
+
+          const vote = {vvid:this.vvid, vote:position}
+          fetch("/poll/vote",{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(vote)
+          })
+          .then(response=>response.json())
+          .then(data=>{
+            if(data.result==="OK"){
+              //Nothing to do
+            }
+            else if(data.result==="NG"){
+              this.errorMessage = data.error
+            }
+          })
+          .catch((error)=>{
+            this.errorMessage = error
+          });
+        },
+      }
+    }
+    Vue.createApp(Poll).mount('#poll')
+  </script>
+</html>

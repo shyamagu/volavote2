@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title><%= title %></title>
+    <!-- <script src="https://unpkg.com/vue@next"></script> -->
+    <script src="https://unpkg.com/vue@3.1.1/dist/vue.global.prod.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/control.css' />
+  </head>
+  <body>
+    <div class="control_header">
+      <div class="header_title">
+        <img class="control_header_image" src="/images/volavote_ccc_128.png"> <%= title %>
+      </div>
+    </div>
+
+    <div class="control_body">
+
+      <%- include('./partial/poll_create'); %>
+
+    </div>
+  </body>
+</html>

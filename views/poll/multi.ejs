@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title><%= title %></title>
+    <!-- <script src="https://unpkg.com/vue@next"></script> -->
+    <script src="https://unpkg.com/vue@3.1.1/dist/vue.global.prod.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/poll.css' />
+    <link rel='stylesheet' href='/stylesheets/polls/multi.css' />
+  </head>
+  <body>
+    <%- include('../partial/poll_header'); %>
+
+    <div id="poll" class="poll_body">
+      <div class="poll_title">{{title}}</div>
+      <div v-if="image">
+        <img class="poll_image" v-bind:src="image">
+      </div>
+      <div v-for="index of number" :key=index class="multi_survey_line_area" :class="{emphasized: (emphasizedIndex===index-1)}">
+        <div class="multi_survey_button_area">
+          <button class="multi_survey_button" :class="{multi_survey_button_on: voted[index-1]}" @click="vote(index-1)">{{displays[index-1]? displays[index-1]:""}}</button>
+        </div>
+        <div class="multi_survey_bar_area" :style="`width:${bars[index-1]}px;`">
+          {{result[index-1]}}&nbsp;
+        </div>
+      </div>
+      <div v-if="errorMessage" class="error_message">{{errorMessage}}</div>
+    </div>
+  </body>
+  <script>
+    const socket = io();
+    var resizeTimer;
+    const mediaQuery = window.matchMedia('(max-width: 700px)')
+    const Poll = {
+      data(){
+        return{
+          title:'<%= title %>',
+          vvid:'<%= vvid %>',
+          image:'<%= image %>',
+          number: Number('<%= number %>'),
+          displays:JSON.parse('<%- JSON.stringify(displays) %>'),
+          parent:'<%= parent %>',
+          errorMessage:"",
+          emphasizedIndex:-1,
+          result:[],
+          voted:[],
+          bar_max_length:0,
+          bars:[],
+          lock:'<%= lock %>',
+        }
+      },
+      mounted() {
+        this.result = new Array(this.number).fill(0)
+        this.voted = new Array(this.number).fill(0)
+        this.bars = new Array(this.number).fill(0)
+
+        this.resizePoll()
+
+        socket.emit('pollCountUp',this.vvid)
+        socket.on('pollCountUp',(countUp)=>{
+          if(countUp.VVID===this.vvid){
+
+            this.result = countUp.COUNTUP
+
+            this.resizePoll()
+          }
+        })
+        socket.on('emphasizeVote',(emphasizeData)=>{
+          if(emphasizeData.vvid===this.vvid){
+            this.emphasizedIndex = emphasizeData.index
+          }
+        })
+        socket.on('switchToUrl',(switchData)=>{
+          if(switchData.from==="volavote" || switchData.from===this.parent){
+            window.location.href=switchData.url
+          }
+        })
+      },
+      methods :{
+        resizePoll(){
+          if (mediaQuery.matches) {
+            this.bar_max_length = 180
+          }else{
+            this.bar_max_length = 390
+          }
+          let max_count = this.result.reduce((a,b)=>Math.max(a,b))
+          if(max_count==0)max_count=1
+          this.bars = this.result.map(el=>el*this.bar_max_length/max_count)
+        },
+        vote(index){          
+          if(this.lock==="true"){
+            //this.voted = new Array(this.number).fill(0)
+            this.errorMessage = "LOCKED"
+            return
+          }
+          this.errorMessage = ""
+          this.voted[index] = this.voted[index]===1?0:1
+
+          const vote = {vvid:this.vvid, vote:this.voted}
+          fetch("/poll/vote",{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(vote)
+          })
+          .then(response=>response.json())
+          .then(data=>{
+            if(data.result==="OK"){
+              //Nothing to do
+            }
+            else if(data.result==="NG"){
+              this.errorMessage = data.error
+            }
+          })
+          .catch((error)=>{
+            this.errorMessage = error
+          });
+        },
+      }
+    }
+    Vue.createApp(Poll).mount('#poll')
+  </script>
+</html>

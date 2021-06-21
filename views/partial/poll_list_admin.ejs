@@ -1,0 +1,158 @@
+<div id="poll_list">
+  <div class="control_panel_title">
+    POLL
+  </div>
+
+  <div v-if="pollList.length > 0" class="head_manage_field smapho_w">
+    <div class="poll_list_item pli_button_f pli_f_head">Switch</div>
+    <div class="poll_list_item pli_title_f">Title</div>
+    <div class="poll_list_item pli_type_f">Type</div>
+    <div class="poll_list_item pli_constraint_f">Mode</div>
+    <div class="poll_list_item pli_detail">Result</div>
+    <div class="poll_list_item pli_parent_f pli_f_head">Parent</div>
+    <div class="poll_list_item pli_action_f">Actions</div>
+  </div>
+
+  <div class="manage_field overflowable smapho_w">
+    <div v-for="(countupPoll,pollnum) in pollList" class="poll_list">
+      <div v-if="!countupPoll.CURRENT" class="poll_list_item pli_button_f">
+        <button class="pli_button" title="Switch to this poll" @click="switchTo(countupPoll.VVID)"><img src="/images/enter.svg"></button>
+      </div>
+      <div v-if="countupPoll.CURRENT" class="poll_list_item pli_button_f"><button class="pli_button"><img src="/images/assign.svg"></button></div>
+      <div class="poll_list_item pli_title_f"><a v-bind:href="'/poll?vvid='+countupPoll.VVID" target="_blank">{{countupPoll.TITLE}}</a></div>
+      <div class="poll_list_item pli_type_f">{{countupPoll.TYPE}}</div>
+      <div class="poll_list_item pli_constraint_f">{{getModeCode(countupPoll.CONSTRAINT)}}</div>
+      <div class="poll_list_item pli_detail">
+        <span class="pli_one_result" v-for="(display,index) in countupPoll.DISPLAYS">
+          <a href="#" @click.prevent.stop="emphasize(countupPoll.VVID,index)">{{getDisplay(display,index)}}</a>:{{countupPoll.COUNTUP[index]}}
+        </span>
+        <span class="pli_one_result" v-if="countupPoll.TYPE==='MAP'">
+          {{countupPoll.COUNTUP.length}} points in this map
+        </span>
+        <span class="pli_one_result" v-if="countupPoll.TYPE==='TEXT'">
+          {{Object.keys(countupPoll.COUNTUP).length}} text votes, ->
+          <select v-model="emphasizedMessageIndexes[pollnum]" @change="emphasize(countupPoll.VVID,emphasizedMessageIndexes[pollnum]-1)">
+            <option v-for="n of Object.keys(countupPoll.COUNTUP).length" v-bind:value="n-1">{{n}}</option>
+          </select>
+        </span>
+      </div>
+      <div class="poll_list_item pli_parent_f">
+        <span v-if="countupPoll.PARENT">{{countupPoll.PARENT}} {{countupPoll.USER? '('+countupPoll.USER+')': ''}}</span>
+        <span v-if="!countupPoll.PARENT">---</span>
+      </div>
+      <div class="poll_list_item pli_action_f">
+        <button title="Lock this poll" v-if="!countupPoll.LOCK" class="pli_action_button" @click="lockPoll(countupPoll.VVID)"><img src="/images/unlock.svg"></button>
+        <button title="Unlock this poll" v-if="countupPoll.LOCK" class="pli_action_button pli_action_btn_done" @click="unlockPoll(countupPoll.VVID)"><img src="/images/lock.svg"></button>
+        <button title="Copy URL" class="pli_action_button clip" :class="{pli_action_btn_done: (copiedVvid==countupPoll.VVID)}" v-bind:data-clipboard-text="getFullUrl(countupPoll.VVID)" @click="copied(countupPoll.VVID)"><img src="/images/copy.svg"></button>
+        <button title="Show QR" class="pli_action_button" @click="showQR(countupPoll.VVID)"><img src="/images/qr.svg"></button>
+        <button title="Delete this poll" class="pli_action_button" @click="deletePoll(countupPoll.VVID)"><img src="/images/remove.svg"></button>
+        <button title="Show answer" v-if="countupPoll.TYPE==='QUIZ'" @click="showResult(countupPoll.VVID)" class="pli_action_button"><img class="twentyfourx" src="/images/answer.png"></button>
+        <button title="Show result" v-if="countupPoll.TYPE==='PPK'" @click="showResult(countupPoll.VVID)"class="pli_action_button"><img class="twentyfourx" src="/images/answer.png"></button>
+        <button title="Show ranking page" v-if="countupPoll.TYPE==='QUIZ'" @click="showRanking()" class="pli_action_button"><img class="twentyfourx" src="/images/list.svg"></button>
+      </div>
+    </div>
+    <div v-if="pollList.length == 0" class="no_poll_list">
+        No Poll
+    </div>
+  </div>
+
+  <div v-if="errorMessage" class="error_message pli_f_head">{{errorMessage}}</div>
+
+</div>
+<script>
+  new ClipboardJS('.clip');
+  const PollList = {
+    data(){
+      return{
+        pollList:[],
+        copiedVvid:"",
+        emphasizedMessageIndexes:[],
+        errorMessage:''
+      }
+    },
+    mounted(){
+      socket.emit('pollListingAdmin')
+      socket.on('pollListingAdmin',(pollList)=>{
+          this.pollList = pollList
+      })
+    },
+    methods:{
+      showQR(vvid){
+        window.open('/poll/showqr?vvid='+vvid,'_blank')
+      },
+      copied(vvid){
+        this.copiedVvid = vvid
+      },
+      getFullUrl(vvid){
+        const host = window.location.host
+        const protocol = window.location.protocol
+
+        return protocol+"//"+host+"/poll?vvid="+vvid
+      },
+      getDisplay(display,index){
+        let returnText = ''
+        if(display){
+          if(display.length > 4){
+            returnText = display.substr(0,4) + "~"
+          }else{
+            returnText = display
+          }
+        }else{
+          returnText = index+1+"th"
+        }
+        return returnText
+      },
+      getModeCode(constraint){
+        if(constraint==='SINGLE') return 'S'
+        if(constraint==='MULTI')  return 'M'
+      },
+      switchTo(vvid){
+        this.callFetch("/api/switch",vvid,'')
+      },
+      emphasize(vvid,index){
+        this.callFetch("/api/emphasize",vvid,index)        
+      },
+      lockPoll(vvid){
+        this.callFetch("/api/lock",vvid)
+      },
+      unlockPoll(vvid){
+        this.callFetch("/api/unlock",vvid)
+      },
+      deletePoll(vvid){
+        this.callFetch("/api/delete",vvid)
+      },
+      showResult(vvid){
+        this.callFetch("/api/result",vvid)
+      },
+      callFetch(action,vvid,index){
+        this.errorMessage = ''
+
+        fetch(action,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            vvid:vvid,
+            emphasize:index,
+          })
+        })
+        .then(response=>response.json())
+        .then(data=>{
+
+          //OK
+          if(data.result==="OK"){
+          }
+          if(data.result==="NG"){
+            this.errorMessage = data.error
+          }
+        })
+        .catch(error=>{
+          this.errorMessage = error
+        })
+      },
+      showRanking(){
+        window.open('/quiz/ranking?type=ADMIN','_blank')
+      },
+    }
+  }
+  Vue.createApp(PollList).mount('#poll_list')
+</script>

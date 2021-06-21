@@ -1,0 +1,15 @@
+body {
+  /*  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif; */
+  font-family:'メイリオ', 'Meiryo','ＭＳ ゴシック','Hiragino Kaku Gothic ProN','ヒラギノ角ゴ ProN W3',sans-serif;
+}
+
+.error_message{
+  color: #F00;
+  font-size: 24px;
+}
+
+@media screen and (max-width:700px){
+  .error_message{
+    font-size: 24px;
+  }
+}

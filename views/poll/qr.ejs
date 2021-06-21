@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title><%= title %></title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-qriously@1.1.1/dist/vue-qriously.min.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/poll.css' />
+    <link rel='stylesheet' href='/stylesheets/qr.css' />
+  </head>
+  <body>
+    <%- include('../partial/poll_header',{user:''}); %>
+
+    <div id="app">
+      <div class="qr_body">
+        <div class="qr_title">{{title}}</div>
+        <div v-if="code" class="qr_title">CODE: {{code}}</div>
+        <div v-if="parent" class="qr_title">OWNER: <span class="emphasized">{{parent}}</span></div>
+        <div v-if="parentCode" class="qr_title">OWNER CODE: <span class="emphasized">{{parentCode}}</span></div>
+        <qriously :value="url" :size="qrSize" />
+      </div>
+    </div>
+  </body>
+  <script>
+    const mediaQuery = window.matchMedia('(max-width: 700px)')
+    Vue.use(window['vue-qriously'])
+    var app = new Vue({
+      el: '#app',
+      data: {
+        title: '<%= title %>',
+        url: '<%= url %>',
+        code: '<%= code %>',
+        parent: '<%= parent %>',
+        parentCode: '<%= parent_code %>',
+        qrSize:300,
+      },
+      mounted() {
+        if (mediaQuery.matches) {
+          this.qrSize = 200;
+        }else{
+          this.qrSize = 300;
+        }
+      },
+      methods:{
+      }
+    })
+  </script>
+</html>

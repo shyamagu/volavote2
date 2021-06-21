@@ -1,0 +1,59 @@
+.alt_button_area{
+    display:inline-block;
+    padding:20px;
+    margin:15px 15px;
+}
+
+.alt_button{
+    width:100px;
+    height:100px;
+    border-radius:100%;
+    font-size:36px;
+    outline:none;
+    border:none;
+    color:#FFF;
+    background: #999;
+    transition-duration: .3s;
+}
+
+.alt_btn_yes{
+    background-color:#99F;
+}
+
+.alt_btn_no{
+    background-color:#F99;
+}
+
+.alt_btn_yes_selected{
+    background-color: #00F;
+}
+
+.alt_btn_no_selected{
+    background-color: #F00;
+}
+
+.alt_button_count{
+    font-size: 24px;
+}
+
+.yesno_block{
+    display: inline-block;
+    width:50%;
+    max-width:400px;
+    border:1px solid #000;
+    margin:auto;
+    text-align: center;
+}
+
+@media screen and (max-width:700px){
+    .alt_button_area{
+        padding:10px;
+        margin:10px 5px;
+    }
+    
+    .alt_button{
+        width:60px;
+        height:60px;
+        font-size:20px;
+    }
+}

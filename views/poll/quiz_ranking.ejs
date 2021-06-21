@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title><%= title %></title>
+    <!-- <script src="https://unpkg.com/vue@next"></script> -->
+    <script src="https://unpkg.com/vue@3.1.1/dist/vue.global.prod.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/poll.css' />
+    <link rel='stylesheet' href='/stylesheets/polls/quiz_ranking.css' />
+  </head>
+  <body>
+    <%- include('../partial/poll_header',{user:''}); %>
+
+    <div id="poll" class="poll_body">
+      <div class="poll_title">{{title}}</div>
+      <div class="ranking_area">
+        <div>
+          xx{{rankingByParent}}xx
+          <select class="ranking_parent_select" v-model="selectParent">
+            <option disabled value="">{{getMessage('select_quiz_owner')}}</option>
+            <option v-for="owner in Object.keys(rankingByParent)" v-bind:value="owner?owner:'ADMIN'">
+              {{owner?owner:'ADMIN'}}
+            </option>
+          </select>
+        </div>
+        <div v-if="selectParent">
+          <div class="ranking_line_area" v-for="user in getRankingByParent(selectParent)" :key="user.name">
+              <div class="ranking_name_area"><div class="ranking_name"><div class="ranking_name_text">{{user.name}}</div></div></div>
+              <div class="ranking_point" :style="`width:${maxLength*user.score/getMaxByParent(selectParent)}px;`">{{user.score===0?user.score:user.score+' pt'}}&nbsp;</div>
+          </div>
+          <div class="ranking_line_area remove_button_area">
+            <button class="remove_button" @click="removeQuizAnswer(selectParent)">{{getMessage('quiz_data_delete')}}</button>
+            <div v-if="errorMessage" class="error_message">{{errorMessage}}</div>      
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+  <script>
+    const mediaQuery = window.matchMedia('(max-width: 700px)')
+    const Poll = {
+      data(){
+        return{
+          title:'<%= title %>',
+          data:JSON.parse('<%- JSON.stringify(data) %>'),
+          rankingByParent:{},
+          selectParent:"",
+          errorMessage:"",
+          maxLength:0,
+          locale:'en',
+          message:{
+            en:{
+              select_quiz_owner : "Select Quiz Owner",
+              quiz_data_delete : "Remove All Quiz Answer",
+            },
+            ja:{
+              select_quiz_owner : "クイズオーナーを選択して下さい",
+              quiz_data_delete : "クイズの回答を削除する",
+            }
+          },
+        }
+      },
+      mounted() {
+        const language = window.navigator.language
+        if(language){
+          this.locale = language.toLocaleLowerCase().split("-")[0]
+        }
+        this.resizePoll()
+
+        if(Object.keys(this.data).length===1){
+          this.selectParent = Object.keys(this.data)[0]
+        }
+        
+        Object.keys(this.data).forEach(key=>{
+          const sorted = this.data[key].sort(function(a,b){
+            if(a.score > b.score) return -1;
+            if(a.score < b.score) return 1;
+            return 0
+          })
+
+          const max = sorted[0].score
+          this.rankingByParent[key] = {}
+          this.rankingByParent[key]["data"] = sorted
+          this.rankingByParent[key]["max"]  = max
+        })
+
+      },
+      methods :{
+        getMessage(key){
+          return this.message[this.locale]? this.message[this.locale][key] : this.message['en'][key]
+        },
+        getMaxByParent(owner){
+          if(owner==='ADMIN'){
+            return this.rankingByParent['']['max']
+          }else{
+            return this.rankingByParent[owner]['max']
+          }
+        },
+        getRankingByParent(owner){
+          if(owner==='ADMIN'){
+            return this.rankingByParent['']['data']
+          }else{
+            return this.rankingByParent[owner]['data']
+          }
+        },
+        resizePoll(){
+          if (mediaQuery.matches) {
+            this.maxLength = 200
+          }else{
+            this.maxLength = 400
+          }
+        },
+        removeQuizAnswer(parent){
+          fetch('/quiz/answer/remove',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({parent:parent})
+          })
+          .then(response=>response.json())
+          .then(data=>{
+            //OK
+            if(data.result==="OK"){
+              location.reload();
+            }
+            else if(data.result==="NG"){
+              this.errorMessage = data.error
+            }
+          })
+          .catch(error=>{
+            this.errorMessage = error
+          })
+        },
+      }
+    }
+    Vue.createApp(Poll).mount('#poll')
+  </script>
+</html>

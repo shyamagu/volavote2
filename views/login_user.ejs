@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title><%= title %></title>
+    <!-- <script src="https://unpkg.com/vue@next"></script> -->
+    <script src="https://unpkg.com/vue@3.1.1/dist/vue.global.prod.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/login.css' />
+  </head>
+  <body>
+    <div id="app">
+      <div class="login_form">
+        <div class="login_title"><img class="login_header_image" src="/images/volavote_ccc_128.png"> {{title}}</div>
+        <div class="login_input_field" v-if="conditions.includes('REQUIRE_NAME')">
+          <div class="sub">Name</div>
+          <input class="login_input" type="text" size=8 v-model="userName" placeholder="input your name">
+        </div>
+        <div class="login_input_field" v-if="conditions.includes('REQUIRE_CODE')">
+          <div class="sub">Code</div>
+          <input class="login_input" type="text" size=8 v-model="pollCode" placeholder="input poll code">
+        </div>
+        <div class="login_input_field" v-if="conditions.includes('REQUIRE_PARENT_NAME')">
+          <div class="sub">Owner</div>
+          <input class="login_input" type="text" size=8 v-model="parentName" placeholder="input poll owner name" :readonly="parent!=''">
+        </div>
+        <div class="login_input_field" v-if="conditions.includes('REQUIRE_PARENT_CODE')">
+          <div class="sub">Owner CODE</div>
+          <input class="login_input" type="text" size=8 v-model="parentCode" placeholder="input poll owner CODE">
+        </div>
+        <div class="login_button_area">
+          <button class="login_button" @click="loginAs">Login</button>
+        </div>
+        <div v-if="errorMessage" class="login_error">
+          <div class="error_message">{{errorMessage}}</div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    const App = {
+      data(){
+        return{
+          title: '<%= title %>',
+          actionUrl: '<%= action %>',
+          type: '<%= type %>',
+          parent:'<%= parent %>',
+          userName:"",
+          pollCode:"",
+          parentName:"",
+          parentCode:"",
+          conditions : JSON.parse('<%- JSON.stringify(conditions) %>'),
+          vvid: '<%= vvid %>',
+          errorMessage:"",
+        }
+      },
+      mounted() {
+        if(this.parent){
+          this.parentName = this.parent
+        }
+      },
+      methods :{
+        loginAs(){
+
+          fetch(this.actionUrl,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({type:this.type,name:this.userName,code:this.pollCode,parent:this.parentName,vvid:this.vvid,parentcode:this.parentCode})
+          })
+          .then(response=>response.json())
+          .then(data=>{
+            //OK
+            if(data.login==="OK"){
+              window.location.href= data.redirect
+            }
+            if(data.login==="NG"){
+              this.errorMessage = data.error
+            }
+          })
+          .catch(error=>{
+            this.errorMessage = error
+          })
+        }
+      }
+    }
+    Vue.createApp(App).mount('#app')
+  </script>
+</html>

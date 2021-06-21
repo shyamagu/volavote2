@@ -1,0 +1,258 @@
+<div id="setting">
+  <div class="control_panel_title">
+    SETTING 
+    <img v-if="!settingShow" src="images/pushdown.svg" @click="setSettingShow(true)">
+    <img v-if="settingShow" src="images/pushup.svg"  @click="setSettingShow(false)">
+  </div>
+  
+  <transition-group name="settingAnime" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:before-leave="beforeLeave" v-on:leave="leave">
+  <div v-if="settingShow">
+
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+          {{getMessage('setting_allow_children_create_poll_title')}}
+      </div>
+      <div class="manage_toggle">
+          <label class="switch">
+              <input type="checkbox" v-model="checkChildrenPollCreate" @change="setChildrenPollCreate">
+              <span class="slider round"></span>
+          </label>
+          {{checkChildrenPollCreate? 'On':'Off'}}
+      </div>
+      <div class="manage_comp">
+        {{getMessage('setting_allow_children_create_poll')}} <a v-bind:href="'/poll/create?parent='+parent" target="_blank">/poll/create?parent={{parent}}</a> 
+      </div>
+    </div>
+
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+        {{getMessage('setting_require_parent_name_title')}}
+      </div>
+      <div class="manage_toggle">
+          <label class="switch">
+              <input type="checkbox" v-model="checkRequireParentName" @change="setRequireParentName">
+              <span class="slider round"></span>
+          </label>
+          {{checkRequireParentName? 'On':'Off'}}
+      </div>
+      <div class="manage_comp">
+        {{getMessage('setting_require_parent_name_1')}} <div v-if="parent" class="poll_code_area">{{parent}}</div>
+        {{getMessage('setting_require_parent_name_2')}}
+      </div>
+    </div>
+
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+        {{getMessage('setting_require_parent_code_title')}}
+      </div>
+      <div class="manage_toggle">
+          <label class="switch">
+              <input type="checkbox" v-model="checkRequireParentCode" @change="setRequireParentCode">
+              <span class="slider round"></span>
+          </label>
+          {{checkRequireParentCode? 'On':'Off'}}
+      </div>
+      <div class="manage_comp">
+        {{getMessage('setting_require_parent_code_1')}} <div v-if="parent" class="poll_code_area">{{parentCode}}</div>
+        {{getMessage('setting_require_parent_code_2')}}
+      </div>
+    </div>
+
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+        {{getMessage('setting_require_user_name_title')}}
+      </div>
+      <div class="manage_toggle">
+          <label class="switch">
+              <input type="checkbox" v-model="checkRequireName" @change="setRequireUserName">
+              <span class="slider round"></span>
+          </label>
+          {{checkRequireName? 'On':'Off'}}
+      </div>
+      <div class="manage_comp">
+        {{getMessage('setting_require_user_name')}}
+      </div>
+    </div>
+
+    <div class="manage_field smapho_w">
+      <div class="manage_title">
+        {{getMessage('setting_export_import_title')}}
+      </div>
+      <div class="manage_toggle">
+          <button class="manage_button" @click="exportPoll()">export poll</button>
+      </div>
+      <div class="manage_comp">
+        {{getMessage('setting_export_import')}}
+      </div>
+    </div>
+
+  </div>
+  </transition-group>
+</div>
+<script>
+  const codeString = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+  const Setting = {
+    data(){
+      return{
+        checkRequireParentName:false,
+        checkRequireName:false,
+        checkChildrenPollCreate:false,
+        checkRequireParentCode:false,
+        errorMessage:"",
+        parent:'<%= name %>',
+        parentCode:'',
+        settingShow:false,
+        locale:'en',
+        message:{
+          en:{
+            setting_allow_children_create_poll_title : "Allow Children Create Poll",
+            setting_require_parent_name_title : "Require Parent Name",
+            setting_require_parent_code_title : "Require Parent Code",
+            setting_require_user_name_title : "Require User Name",
+            setting_export_import_title : "Export/Import",
+            setting_allow_children_create_poll : "Anyone can create poll to access",
+            setting_require_parent_name_1 : "Require parent name",
+            setting_require_parent_name_2 : "to access your poll",
+            setting_require_parent_code_1 : "Require parent CODE",
+            setting_require_parent_code_2 : "to access your poll",
+            setting_require_user_name : "Require user name to access your poll",
+            setting_export_import : "Export your poll data",
+          },
+          ja:{
+            setting_allow_children_create_poll_title : "子ユーザによる投票の作成",
+            setting_require_parent_name_title : "親ユーザ名の要求",
+            setting_require_parent_code_title : "親コードの要求",
+            setting_require_user_name_title : "ユーザ名の要求",
+            setting_export_import_title : "エクスポート/インポート",
+            setting_allow_children_create_poll : "子ユーザとして誰でも右のページから投票を作成できる ->",
+            setting_require_parent_name_1 : "投票サイトのアクセスに対して、親ユーザ名",
+            setting_require_parent_name_2 : "の入力を要求する",
+            setting_require_parent_code_1 : "投票サイトのアクセスに対して、親ユーザコード",
+            setting_require_parent_code_2 : "の入力を要求する",
+            setting_require_user_name : "投票サイトのアクセスに対してユーザ名の入力を要求する",
+            setting_export_import : "投票データのエクスポート",
+          }
+        },
+      }
+    },
+    mounted() {
+      const language = window.navigator.language
+      if(language){
+        this.locale = language.toLocaleLowerCase().split("-")[0]
+      }
+      this.getParentSetting()
+    },
+    methods :{
+      getMessage(key){
+        return this.message[this.locale]? this.message[this.locale][key] : this.message['en'][key]
+      },
+      beforeEnter(el){
+        el.style.height = 0
+      },
+      enter(el){
+        el.style.height = el.scrollHeight + 'px'
+      },
+      beforeLeave(el){
+        el.style.height = el.scrollHeight + 'px'
+      },
+      leave(el){
+        el.style.height = 0
+      },
+      getParentSetting(){
+        fetch('/parent/setting')
+        .then(response=>response.json())
+        .then(data=>{
+          //OK
+          if(data.result==="OK"){
+            this.checkRequireParentName = data.checkRequireParentName
+            this.checkRequireName = data.checkRequireName
+            this.checkChildrenPollCreate = data.childrenPollCreate
+            this.parentCode = data.requireParentCode
+            if(this.parentCode){
+              this.checkRequireParentCode = true;
+            }else{
+              this.checkRequireParentCode = false;
+            }
+          }
+        })
+        .catch(error=>{
+          this.errorMessage = error
+        })
+      },
+      setSettingShow(flag){
+        this.settingShow = flag
+      },
+      setRequireParentName(){
+        this.callSetSetting('requireParentName',this.checkRequireParentName)
+      },
+      setRequireParentCode(){
+        if(this.checkRequireParentCode){
+          if(!this.checkRequireParentName){
+            this.checkRequireParentName = true
+            this.callSetSetting('requireParentName',this.checkRequireParentName)
+          }
+          this.parentCode = Array.from(Array(4)).map(()=>codeString[Math.floor(Math.random()*codeString.length)]).join('')
+        }else{
+          this.parentCode = ''
+        }
+        this.callSetSetting('requireParentCode',this.parentCode)
+      },
+      setRequireUserName(){
+        this.callSetSetting('requireUserName',this.checkRequireName)
+      },
+      setChildrenPollCreate(){
+        this.callSetSetting('childrenPollCreate',this.checkChildrenPollCreate)
+      },
+      callSetSetting(filedName,value){
+        fetch('/parent/setting',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({field:filedName,value:value})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+          //OK
+          if(data.result==="OK"){
+            this.getParentSetting()
+          }
+          else if(data.result==="NG"){
+            this.errorMessage = data.error
+          }
+
+        })
+        .catch(error=>{
+          this.errorMessage = error
+        })
+      },
+      exportPoll(){
+        this.exportFromServer(["POLL"])
+      },
+      exportFromServer(types){
+        fetch('/parent/export',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({types:types})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+          //OK
+          if(data.result==="OK"){
+            let blob = new Blob([JSON.stringify(data.export)],{type:'application/json'})
+            let link = document.createElement('a')
+            link.href = window.URL.createObjectURL(blob)
+            link.download = 'volavote_export_'+types.join('_')+Date.now()+'.json'
+            link.click()
+          }
+          else if(data.result==="NG"){
+            this.errorMessage = data.error
+          }
+
+        })
+        .catch(error=>{
+          this.errorMessage = error
+        })
+      },
+    }
+  }
+  Vue.createApp(Setting).mount('#setting')
+</script>

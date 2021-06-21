@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title><%= title %></title>
+    <!-- <script src="https://unpkg.com/vue@next"></script> -->
+    <script src="https://unpkg.com/vue@3.1.1/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/control.css' />
+    <link rel='stylesheet' href='/stylesheets/slider.css' />
+  </head>
+  <script>
+      const socket = io();
+  </script>
+  <body>
+    <div class="control_header">
+      <div class="header_title">
+        <img class="control_header_image" src="images/volavote_ccc_128.png"> <%= title %>
+      </div>
+    </div>
+    <div class="control_name_filed">
+      <%= parent %>
+      <a href="/parent/signout" title="Sign out"><img class="control_icon" src="images/logout.svg"></a>
+    </div>
+
+    <div class="control_body">
+
+      <!-- SETTING -->
+      <%- include('./partial/setting_parent'); %>
+      <br>
+
+      <!-- POLL -->
+      <%- include('./partial/poll_list_parent'); %>
+
+      <%- include('./partial/poll_create'); %>
+
+    </div>
+
+  </body>
+</html>

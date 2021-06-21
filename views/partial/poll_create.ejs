@@ -1,0 +1,329 @@
+<div id="poll_create">
+  <div v-if="createBy==='USER'" class="message_for_user">{{getMessage('welcome')+ userName +getMessage('letsmakepoll')}}</div>
+
+  <transition-group name="fade" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:before-leave="beforeLeave" v-on:leave="leave">
+
+    <div v-if="pollMaking" class="make_form">
+    <div class="make_input_field">
+      <input class="make_input" type="text" :placeholder="getMessage('input_title')" v-model="pollTitle">
+    </div>
+    <div class="make_input_field">
+      <select class="poll_select" v-model="pollType" required>
+        <option disabled value="">{{getMessage('select_type')}}</option>
+        <option value="ALT" style="color:#666;">{{getMessage('yesno')}}</option>
+        <option value="MULTI" style="color:#666;">{{getMessage('multi')}}</option>
+        <option value="SURVEY" style="color:#666;">{{getMessage('survey')}}</option>
+        <option value="MAP" style="color:#666;">{{getMessage('map')}}</option>
+        <option value="TEXT" style="color:#666;">{{getMessage('freetext')}}</option>
+        <option value="QUIZ" style="color:#666;">{{getMessage('quiz')}}</option>
+        <option value="PPK" style="color:#666;">{{getMessage('planningpoker')}}</option>
+      </select>
+    </div>
+    <div v-if="pollType==='MULTI' || pollType==='SURVEY' || pollType==='QUIZ'">
+      <div class="make_input_field">
+        <input class="make_input" type="number" :placeholder="getMessage('number_of_choice')" v-model="pollNumber">
+      </div>
+      <div class="make_input_field" v-for="num in Number(pollNumber)">
+        <div class="make_input_sub">{{getMessage('of_choice')+num}}</div>
+        <input class="make_input make_input_2nd" type="text" v-model="pollDisplays[num-1]">
+      </div>
+    </div>
+    <div v-if="pollType === 'PPK'">
+      <div class="make_input_field">
+        <select class="poll_select" v-model="planningPokerPattern" required>
+          <option disabled value="">{{getMessage('select_poker_pattern')}}</option>
+          <option value="STANDARD" style="color:#666;">0,1/2,1,2,3,5,8,13,20,40,100,?</option>
+          <option value="SIMPLE" style="color:#666;">1,2,3,5,8,13,?</option>
+          <option value="PARTY" style="color:#666;">XS,S,M,L,XL</option>
+        </select>
+      </div>
+  </div>
+    <div v-if="(pollType!=='MAP') && (pollType!=='PPK')">
+      <div class="make_input_field">
+        <div class="make_input_sub">{{getMessage('option')}}</div>
+        <input class="make_input make_input_2nd" type="text" :placeholder="getMessage('image_url')" v-model="pollImageUrl">
+      </div>
+    </div>
+
+    <div v-if="pollType==='MAP'">
+      <div class="make_input_field">
+        <select class="poll_select" v-model="pollImageTemplate" required>
+          <option disabled value="">{{getMessage('select_map_type')}}</option>
+          <option value="JAPAN" style="color:#666;">{{getMessage('japan_map')}}</option>
+          <option value="WORLD" style="color:#666;">{{getMessage('world_map')}}</option>
+          <option value="CUSTOM" style="color:#666;">{{getMessage('custom_map')}}</option>
+        </select>
+      </div>
+      <div v-if="pollImageTemplate==='CUSTOM'" class="make_input_field">
+        <input class="make_input" type="text" :placeholder="getMessage('image_url')" v-model="pollImageUrl">
+      </div>
+      <div class="make_input_field">
+        <div class="make_input_sub">{{getMessage('image_width')}}</div>
+        <input class="make_input make_input_2nd" type="number" :placeholder="getMessage('input_image_width')" v-model="pollImageWidth">
+      </div>
+    </div>
+
+    <div v-if="pollType ==='MAP' || pollType ==='TEXT'" class="make_input_field">
+      <select class="poll_select" v-model="pollConstraint">
+        <option value="SINGLE">{{getMessage('onevote_oneperson')}}</option>
+        <option value="MULTI">{{getMessage('nvote_oneperson')}}</option>
+      </select>
+    </div>
+    <div v-if="pollType === 'QUIZ'" class="make_input_field poll_bottom">
+      <div class="make_input_sub">{{getMessage('select_answer')}}</div>
+      <div v-for="(display,index) in pollDisplays">
+        <input class="poll_answer_check" type="checkbox" :id="display" :value="display" v-model="pollAnswer">
+        <label class="poll_answer" for="display">{{display}}</label>
+      </div>
+    </div>
+    <div class="make_input_field">
+          <button class="create_button add_button" @click="createNewPoll">{{getMessage('create')}}</button>
+          <button class="create_button cancel_button" @click="cancelToCreateNewPoll">{{getMessage('cancel')}}</button>
+    </div>
+    <div class="make_input_field error_message" v-if="pollErrorMessage">{{pollErrorMessage}}</div>
+  </div>
+
+  </transition-group>
+  <div v-if="!pollMaking" class="button_field">
+      <div v-if="createBy==='USER' && createVvid" class="message_for_user transp">
+        <a v-bind:href="'/poll?vvid='+createVvid+'&parent='+pollParent" target="_blank">"{{createTitle}}"</a>{{getMessage('was_created')}}</div>
+      <button class="create_button" @click="setPollMaking(true)">{{getMessage('plus_create_poll')}}</button>
+  </div>
+</div>
+<script>
+  const PollCreate = {
+    data(){
+      return{
+        locale:'en',
+        pollMaking:false,
+        pollErrorMessage:"",
+        pollTitle:"",
+        pollType:"",
+        pollImageUrl:"",
+        pollImageTemplate:"",
+        pollImageWidth:500,
+        pollNumber:"",
+        pollDisplays:[],
+        pollConstraint:"SINGLE",
+        pollAnswer:[],
+        pollAnswerDigit:[],
+        pollParent:'<%= name %>',
+        planningPokerPattern:'',
+        createBy:'<%= type %>',
+        userName:'<%= user %>',
+        createVvid:'',
+        createTitle:'',
+        message:{
+          en:{
+            input_title : "Input Poll Title",
+            select_type : "Select Type",
+            yesno: "YES/NO",
+            multi: "Multiple",
+            survey: "Survey",
+            map : "Map",
+            freetext: "FreeText",
+            quiz : "Quiz",
+            planningpoker: "Planning Poker",
+            number_of_choice: "Number of Choice",
+            of_choice: "choice ",
+            select_poker_pattern: "Select Poker Pattern",
+            option : "*option",
+            image_url:"Input Image URL",
+            select_map_type:"Select MAP Image Type",
+            japan_map:"Japan MAP",
+            world_map:"World MAP",
+            custom_map:"Custom MAP URL",
+            image_width: "Image Width (px)",
+            input_image_width: "Input Width (ex 500)",
+            onevote_oneperson: "1 vote: 1 person",
+            nvote_oneperson:"n vote: 1 person",
+            select_answer:"Select Quiz Answer",
+            create:"Create",
+            cancel:"Cancel",
+            welcome:"Welcome ",
+            letsmakepoll:"-san, Let's make a poll.",
+            plus_create_poll:"+ Create Poll",
+            was_created:" was created.",
+          },
+          ja:{
+            input_title : "投票のタイトルを入力して下さい",
+            select_type : "投票タイプを選択して下さい",
+            yesno: "YES/NO",
+            multi: "複数選択",
+            survey: "評価",
+            map : "地図",
+            freetext: "自由記入",
+            quiz : "クイズ",
+            planningpoker: "プランニングポーカー",
+            number_of_choice: "選択肢の数を入力して下さい",
+            of_choice: "選択肢 ",
+            select_poker_pattern: "ポーカーのパターンを選択して下さい",
+            option : "*任意",
+            image_url:"画像の URL を入力して下さい",
+            select_map_type:"地図のタイプを選択して下さい",
+            japan_map:"日本地図",
+            world_map:"世界地図",
+            custom_map:"地図用の画像 URL を指定する",
+            image_width: "地図画像の幅 (px)",
+            input_image_width: "画像の幅を入力して下さい (例 500)",
+            onevote_oneperson: "一人１投票",
+            nvote_oneperson:"一人複数投票",
+            select_answer:"クイズの正答を選択して下さい",
+            create:"作成",
+            cancel:"キャンセル",
+            welcome:"ようこそ ",
+            letsmakepoll:" さん、投票を作りましょう",
+            plus_create_poll:"投票を作成する",
+            was_created:" が作成されました",
+          },
+        }
+      }
+    },
+    mounted(){
+      const language = window.navigator.language
+      if(language){
+        this.locale = language.toLocaleLowerCase().split("-")[0]
+      }
+
+    },
+    methods:{
+      getMessage(key){
+        return this.message[this.locale]? this.message[this.locale][key] : this.message['en'][key]
+      },
+      beforeEnter(el){
+        el.style.height = 0
+      },
+      enter(el){
+        el.style.height = '100%'
+//        el.style.height = el.scrollHeight + 'px'
+      },
+      beforeLeave(el){
+        el.style.height = el.scrollHeight + 'px'
+      },
+      leave(el){
+        el.style.height = 0
+      },
+      initializePollSetting(){
+        this.pollErrorMessage = ""
+        this.pollTitle= ""
+        this.pollType = ""
+        this.pollImageUrl = ""
+        this.pollImageTemplate = ""
+        this.pollImageWidth = 500
+        this.pollNumber = ""
+        this.pollDisplays = []
+        this.pollAnswer = []
+        this.pollConstraint = "SINGLE"
+        this.planningPokerPattern = ""
+      },
+      setPollMaking(flag){
+        if(flag){
+          window.scrollBy(0,500)
+        }
+        this.pollMaking = flag
+        this.initializePollSetting()
+      },
+      cancelToCreateNewPoll(){
+        this.setPollMaking(false)
+      },
+      createNewPoll(){
+        if(!this.pollTitle){
+          this.pollErrorMessage = "Input Poll title"
+          return
+        }
+
+        if(!this.pollType){
+          this.pollErrorMessage = "Select Poll Type"
+          return
+        }
+
+        if(this.pollType==='MAP'){
+          if(!this.pollImageTemplate){
+            this.pollErrorMessage = "Select Map Image Type"
+            return
+          }
+
+          if(this.pollImageTemplate==='CUSTOM' && !this.pollImageUrl){
+            this.pollErrorMessage = "Input Image URL"
+            return
+          }
+        }
+
+        if(this.pollType==='PPK'){
+          if(this.planningPokerPattern==='STANDARD'){
+            this.pollDisplays = ['0','1/2','1','2','3','5','8','13','20','40','100','?']
+            this.pollNumber = this.pollDisplays.length
+          }else if(this.planningPokerPattern==='SIMPLE'){
+            this.pollDisplays = ['1','2','3','5','8','13','?']
+            this.pollNumber = this.pollDisplays.length
+          }else if(this.planningPokerPattern==='PARTY'){
+            this.pollDisplays = ['XS','S','M','L','XL']
+            this.pollNumber = this.pollDisplays.length
+          }else{
+            this.pollErrorMessage = "Invalid Poker Pattern"
+            return
+          }
+        }
+
+        if(this.pollType==='MULTI' || this.pollType==='SURVEY' || this.pollType==='QUIZ'){
+          if(!this.pollNumber){
+            this.pollErrorMessage = "Input Number of Poll choice"
+            return
+          }
+          if(this.pollDisplays.length === 0){
+            this.pollDisplays = new Array(Number(this.pollNumber)).fill('')
+          }
+        }
+
+        if(this.pollType === 'QUIZ' && this.pollAnswer.length === 0){
+          this.pollErrorMessage = "Select Answer of this Quiz"
+          return
+        }
+
+        if(this.pollType === 'QUIZ'){
+          this.pollAnswerDigit = new Array(Number(this.pollNumber)).fill(0)
+          for (let index = 0; index < Number(this.pollNumber); index++) {
+            if(this.pollAnswer.includes(this.pollDisplays[index])){
+              this.pollAnswerDigit[index]=1
+            }
+          }
+        }
+
+        fetch('/api/create',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            title:this.pollTitle,
+            type:this.pollType,
+            imageUrl:this.pollImageUrl,
+            imageTemplate:this.pollImageTemplate,
+            imageWidth:this.pollImageWidth,
+            number:this.pollNumber,
+            displays:this.pollDisplays,
+            answer:this.pollAnswerDigit,
+            constraint:this.pollConstraint,
+            parent:this.pollParent,
+            user:this.userName
+          })
+        })
+        .then(response=>response.json())
+        .then(data=>{
+
+          //OK
+          if(data.result==="OK"){
+              this.createVvid = data.vvid
+              this.createTitle= this.pollTitle
+              this.setPollMaking(false)
+          }
+          if(data.result==="NG"){
+            this.pollErrorMessage = data.error
+          }
+        })
+        .catch(error=>{
+          this.pollErrorMessage = error
+        })
+      }
+    }
+  }
+  Vue.createApp(PollCreate).mount('#poll_create')
+</script>

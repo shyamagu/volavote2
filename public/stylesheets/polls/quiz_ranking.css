@@ -1,0 +1,115 @@
+.ranking_area{
+    text-align: center;
+}
+
+.ranking_line_area{
+    text-align: left;
+    width:650px;
+    height:70px;
+    margin:auto;
+}
+
+.ranking_name_area{
+    display: inline-block;
+    vertical-align:middle;
+    text-align: center;
+    width:250px;
+    height:70px;
+}
+
+.ranking_name{
+    display: inline-block;
+    vertical-align:middle;
+    width:240px;
+    height:60px;
+    font-size:20px;
+    background:#CCF;
+    margin-top:5px;
+    border:none;
+}
+
+.ranking_name_text{
+    margin:15px auto;
+}
+
+.ranking_point{
+    vertical-align: middle;
+    display: inline-block;
+    width: 0px;
+    font-size: 20px;
+    color: #000;
+    background-color: #99F;
+    text-align: right;
+    padding:10px 0px 10px 0px;
+    transition-duration: .3s;
+    transition-property:width;
+}
+
+.ranking_parent_select{
+    font-size: 24px;
+    color:#666;
+    display: inline-block;
+    margin: auto;
+    width: 400px;
+    background-color: transparent;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    border:none;
+    border-bottom: 1px solid #AAA;
+    padding: 20px 20px;
+    margin-bottom: 40px;
+}
+
+.remove_button_area{
+    text-align: right;
+    margin-top: 120px;
+}
+
+.remove_button{
+    background-color: #EEE;
+    border:3px solid #F99;
+    padding:15px 20px;
+    font-size:16px;
+    color:#F99;
+    font-weight: bold;
+}
+
+@media screen and (max-width:700px){
+    .ranking_line_area{
+        width:100%;
+        height:50px;
+    }
+    
+    .ranking_name_area{
+        width:100px;
+        height:50px;
+    }
+    
+    .ranking_name{
+        width:90px;
+        height:40px;
+        font-size:16px;
+        margin-top:5px;
+    }
+    
+    .ranking_name_text{
+        width:90px;
+        margin:5px auto;
+        word-wrap:break-word;
+    }
+    
+    .ranking_point{
+        width: 0px;
+        font-size: 16px;
+        padding:5px 0px 5px 0px;
+    }
+    
+    .ranking_parent_select{
+        font-size: 18px;
+        width: 200px;
+        padding: 20px 20px;
+        margin-bottom: 40px;
+    }
+    
+}

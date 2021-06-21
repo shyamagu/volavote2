@@ -1,0 +1,147 @@
+<div id="parent">
+  <div class="control_panel_title">
+    PARENT
+  </div>
+
+  <div class="manage_field overflowable smapho_w">
+    <div v-for="name in parentList">
+        <div class="parent_name">{{name}}</div>
+        <div class="parent_action_button_f"><button title="Delete this user" class="parent_action_button" @click="deleteParent(name)"><img src="/images/remove.svg"></button></div>
+    </div>
+
+    <div v-if="parentList.length == 0" class="no_parent_name">
+        No parent user
+    </div>
+  </div>
+
+  <transition-group name="fade" v-on:before-enter="beforeEnter" v-on:enter="enter" v-on:before-leave="beforeLeave" v-on:leave="leave">
+
+  <div v-if="parentMaking" class="make_form">
+      <div class="make_input_field">
+          <input class="make_input" type="text" :placeholder="getMessage('input_parent_name')" v-model="parentUserName">
+      </div>
+      <div class="make_input_field">
+          <input class="make_input" type="text" :placeholder="getMessage('input_parent_password')" v-model="parentUserPassword">
+      </div>
+      <div class="make_input_field">
+          <button class="create_button add_button" @click="addParentUser">{{getMessage('parent_create')}}</button>
+          <button class="create_button cancel_button" @click="setParentMaking(false)">{{getMessage('parent_cancel')}}</button>
+      </div>
+      <div class="make_input_field error_message" v-if="parentErrorMessage">{{parentErrorMessage}}</div>
+  </div>
+
+  </transition-group>
+
+  <div v-if="!parentMaking" class="button_field">
+      <button class="create_button" @click="setParentMaking(true)">{{getMessage('plus_add_parent')}}</button>
+  </div>
+</div>
+<script>
+  const Parent = {
+    data(){
+      return{
+        parentList:[],
+        parentMaking:false,
+        parentUserName:"",
+        parentUserPassword:"",
+        parentErrorMessage:"",
+        locale:'en',
+        message:{
+          en:{
+            input_parent_name : "parent name",
+            input_parent_password : "parent password",
+            parent_create : "Create",
+            parent_cancel : "Cancel",
+            plus_add_parent : "+ Add parent",
+          },
+          ja:{
+            input_parent_name : "親ユーザ名を入力して下さい",
+            input_parent_password : "親ユーザのパスワードを入力して下さい",
+            parent_create : "作成",
+            parent_cancel : "キャンセル",
+            plus_add_parent : "親ユーザを登録する",
+          }
+        },
+      }
+    },
+    mounted() {
+      const language = window.navigator.language
+      if(language){
+        this.locale = language.toLocaleLowerCase().split("-")[0]
+      }
+      socket.emit('parentManaging')
+      socket.on('parentManaging',(parentList)=>{
+          this.parentList = parentList
+      })
+    },
+    methods :{
+      getMessage(key){
+        return this.message[this.locale]? this.message[this.locale][key] : this.message['en'][key]
+      },
+      beforeEnter(el){
+        el.style.height = 0
+      },
+      enter(el){
+        el.style.height = el.scrollHeight + 'px'
+      },
+      beforeLeave(el){
+        el.style.height = el.scrollHeight + 'px'
+      },
+      leave(el){
+        el.style.height = 0
+      },
+      addParentUser(){
+        if(!this.parentUserName || !this.parentUserPassword){
+            this.parentErrorMessage = "Input Name and Password"
+            return;
+        }
+        fetch('/admin/parent',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({name:this.parentUserName,password:this.parentUserPassword})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+
+          //OK
+          if(data.result==="OK"){
+              this.setParentMaking(false)
+          }
+          if(data.result==="NG"){
+            this.parentErrorMessage = data.error
+          }
+        })
+        .catch(error=>{
+          this.parentErrorMessage = error
+        })
+      },
+      deleteParent(name){
+        fetch('/admin/parent/delete',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({name:name})
+        })
+        .then(response=>response.json())
+        .then(data=>{
+          //OK
+          if(data.result==="OK"){
+          }
+          if(data.result==="NG"){
+            this.parentErrorMessage = data.error
+          }
+        })
+        .catch(error=>{
+          this.parentErrorMessage = error
+        })
+      },
+      setParentMaking(flag){
+          this.parentMaking = flag
+          this.parentErrorMessage = ""
+          this.parentUserName=""
+          this.parentUserPassword=""
+      },
+    }
+  }
+  Vue.createApp(Parent).mount('#parent')
+</script>
+
