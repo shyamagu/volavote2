@@ -137,11 +137,6 @@ module.exports = function(io) {
         }else{
             res.render('poll/nopoll',{title:'volavote',message:'QR NOT FOUND'})
         }
-
-        if(poll){
-
-        }else{
-        }
     })
 
     router.get('/create',function(req,res,next){
