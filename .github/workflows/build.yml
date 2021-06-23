@@ -10,10 +10,12 @@ jobs:
     name: Jest&SonarCloud
     runs-on: ubuntu-latest
     steps:
-      - name: Jest UnitTest
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Jest UnitTest
         run: yarn install
         run: yarn test    
 
