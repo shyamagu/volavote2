@@ -17,6 +17,15 @@ if(!process.env.ADMIN_PASSWORD){
 if(!process.env.ANONIMOUS_CREATE){
   process.env.ANONIMOUS_CREATE='false'
 }
+if(!process.env.REQUIRE_CODE){
+  process.env.REQUIRE_CODE='false'
+}
+if(!process.env.POLL_CODE){
+  process.env.POLL_CODE='false'
+}
+if(!process.env.REQUIRE_NAME){
+  process.env.REQUIRE_NAME='false'
+}
 
 var app = express();
 app.use(session({

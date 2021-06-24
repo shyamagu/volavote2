@@ -17,7 +17,7 @@ Some of poll can be used as an ice-break and other can correct feedback and unde
 ### Easy to deploy
 
 You can deploy this application using <a href="https://hub.docker.com/r/shyamagu/volavote" target="_blank">Dokcer image</a> wherever you want.
-or you can clone source code from <a href="https://github.com/shyamagu/volavote" target="_blank">GitHub repository</a> and deploy whereever you want.
+or you can clone source code from <a href="https://github.com/shyamagu/volavote2" target="_blank">GitHub repository</a> and deploy whereever you want.
 
 <img src="./public/images/volavote_deploy.png" width="500">
 
