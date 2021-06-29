@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
-  <head>
+  <head prefix="og: http://ogp.me/ns#">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="og:url" content="<%= fullurl %>">
+    <meta name="og:title" content="<%= title %>">
+    <meta name="og:image" content="<%= ogpimageurl %>">
+    <meta name="og:site_name" content="volavote">
+    <meta name="og:type" content="article">
+    <meta name="twitter:card" content="summary" />
     <title><%= title %></title>
     <!-- <script src="https://unpkg.com/vue@next"></script> -->
     <script src="https://unpkg.com/vue@3.1.1/dist/vue.global.prod.js"></script>

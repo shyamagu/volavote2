@@ -10,6 +10,10 @@ module.exports = function(io) {
 
         const poll = ballotBox.getPollByVvid(req.query.vvid)
         const requestParent = req.query.parent
+        const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+        const ogpImageUrl = req.protocol + '://' + req.get('host') + "/images/volavote_ogp.png"
+        console.log(fullUrl)
+        console.log(ogpImageUrl)
 
         if(poll){
             //CODEやユーザ名、親名の必須チェックとログイン画面へ返す
@@ -54,6 +58,8 @@ module.exports = function(io) {
                         parent:poll.PARENT,
                         lock:poll.LOCK,
                         user:req.session.NAME,
+                        fullurl:fullUrl,
+                        ogpimageurl:ogpImageUrl,
                     }
 
             switch(poll.TYPE){
