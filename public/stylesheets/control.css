@@ -238,6 +238,7 @@ body{
 
 .parent_action_button_f{
     display: inline-block;
+    margin: 0px 5px;
 }
 
 .parent_action_button{

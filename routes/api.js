@@ -163,6 +163,27 @@ module.exports = function(io) {
     }
   })
 
+  router.post('/clear',function(req,res,next){
+    const vvid = req.body.vvid
+    const poll = ballotBox.getPollByVvid(vvid)
+
+    if(req.session.ADMIN || poll.PARENT === req.session.PARENT){
+
+      if(ballotBox.removePollResult(vvid)){
+
+        io.emit('pollListingAdmin',ballotBox.countUpAll())
+        io.emit('pollListingParent',{list:ballotBox.countUpParent(req.session.PARENT),parent:poll.PARENT})
+
+        res.json({result:"OK"})
+      }else{
+        res.json({result:"NG",error:"CAN NOT REMOVE POLL RESULT"})
+      }
+    }else{
+      res.json({result:"NG",error:"INVALID ACCESS"})
+    }
+
+  })
+
   router.post('/delete',function(req,res,next){
     const vvid = req.body.vvid
     const poll = ballotBox.getPollByVvid(vvid)

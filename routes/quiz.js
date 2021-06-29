@@ -87,10 +87,16 @@ router.post('/answer/remove', function(req, res, next) {
     const parent = req.body.parent
 
     if(req.session.ADMIN || req.session.PARENT === parent){
-        const quizs = ballotBox.getPollByTypeAndParent('QUIZ',parent)
-        Object.values(quizs).forEach(quizPoll => {
-            quizPoll.RESULT = {}
-        })    
+        let owner
+        if(req.session.ADMIN && parent === 'ADMIN'){
+            owner = ""
+        }else{
+            owner = parent
+        }
+        const quizs = ballotBox.getPollByTypeAndParent('QUIZ',owner)
+        Object.keys(quizs).forEach(vvid =>{
+            ballotBox.removePollResult(vvid)
+        })
         res.json({result:"OK"})
     }else{
         res.json({result:"NG",error:"INVALID ACCESS"})

@@ -6,6 +6,7 @@
   <div class="manage_field overflowable smapho_w">
     <div v-for="name in parentList">
         <div class="parent_name">{{name}}</div>
+        <div class="parent_action_button_f"><button title="goto Login" class="parent_action_button" @click="loginParent()"><img src="/images/login.svg"></button></div>
         <div class="parent_action_button_f"><button title="Delete this user" class="parent_action_button" @click="deleteParent(name)"><img src="/images/remove.svg"></button></div>
     </div>
 
@@ -114,6 +115,9 @@
         .catch(error=>{
           this.parentErrorMessage = error
         })
+      },
+      loginParent(){
+        open( "/parent", "_blank" ) ;
       },
       deleteParent(name){
         fetch('/admin/parent/delete',{

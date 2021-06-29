@@ -51,6 +51,11 @@ class BallotBox {
         return delete this.box[vvid]
     }
 
+    removePollResult(vvid){
+        this.box[vvid]["RESULT"] = {}
+        return true
+    }
+
     getPollId(){
         return this.id
     }
@@ -84,7 +89,6 @@ class BallotBox {
         });
         return pollByType
     }
-
 
     vote(vvid,sessionid,vote){
         if(this.box[vvid]["CONSTRAINT"]==="SINGLE"){

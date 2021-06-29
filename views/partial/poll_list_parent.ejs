@@ -45,6 +45,7 @@
         <button title="Unlock this poll" v-if="countupPoll.LOCK" class="pli_action_button pli_action_btn_done" @click="unlockPoll(countupPoll.VVID)"><img src="/images/lock.svg"></button>
         <button title="Copy URL" class="pli_action_button clip" :class="{pli_action_btn_done: (copiedVvid==countupPoll.VVID)}" v-bind:data-clipboard-text="getFullUrl(countupPoll.VVID)" @click="copied(countupPoll.VVID)"><img src="/images/copy.svg"></button>
         <button title="Show QR" class="pli_action_button" @click="showQR(countupPoll.VVID)"><img src="/images/qr.svg"></button>
+        <button title="Clear poll result" class="pli_action_button" @click="removePollResult(countupPoll.VVID)"><img src="/images/empty.svg"></button>
         <button title="Delete this poll" class="pli_action_button" @click="deletePoll(countupPoll.VVID)"><img src="/images/remove.svg"></button>
         <button title="Show answer" v-if="countupPoll.TYPE==='QUIZ'" @click="showResult(countupPoll.VVID)" class="pli_action_button"><img class="twentyfourx" src="/images/answer.png"></button>
         <button title="Show result" v-if="countupPoll.TYPE==='PPK'" @click="showResult(countupPoll.VVID)"class="pli_action_button"><img class="twentyfourx" src="/images/answer.png"></button>
@@ -120,6 +121,9 @@
       },
       unlockPoll(vvid){
         this.callFetch("/api/unlock",vvid)
+      },
+      removePollResult(vvid){
+        this.callFetch("/api/clear",vvid)
       },
       deletePoll(vvid){
         this.callFetch("/api/delete",vvid)
