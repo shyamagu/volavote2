@@ -20,9 +20,6 @@ if(!process.env.ANONIMOUS_CREATE){
 if(!process.env.REQUIRE_CODE){
   process.env.REQUIRE_CODE='false'
 }
-if(!process.env.POLL_CODE){
-  process.env.POLL_CODE='false'
-}
 if(!process.env.REQUIRE_NAME){
   process.env.REQUIRE_NAME='false'
 }
