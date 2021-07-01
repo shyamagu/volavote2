@@ -23,8 +23,11 @@
       <div class="poll_list_item pli_type_f">{{countupPoll.TYPE}}</div>
       <div class="poll_list_item pli_constraint_f">{{getModeCode(countupPoll.CONSTRAINT)}}</div>
       <div class="poll_list_item pli_detail">
-        <span class="pli_one_result" v-for="(display,index) in countupPoll.DISPLAYS">
+        <span class="pli_one_result" v-if="countupPoll.TYPE!=='INFO'" v-for="(display,index) in countupPoll.DISPLAYS">
           <a href="#" @click.prevent.stop="emphasize(countupPoll.VVID,index)">{{getDisplay(display,index)}}</a>:{{countupPoll.COUNTUP[index]}}
+        </span>
+        <span class="pli_one_result" v-if="countupPoll.TYPE==='INFO'">
+          {{countupPoll.COUNTUP[0]}} user, {{countupPoll.DISPLAYS[1]}} min timer, show user: {{countupPoll.DISPLAYS[2]}}
         </span>
         <span class="pli_one_result" v-if="countupPoll.TYPE==='MAP'">
           {{countupPoll.COUNTUP.length}} points in this map

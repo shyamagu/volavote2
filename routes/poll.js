@@ -83,6 +83,9 @@ module.exports = function(io) {
                 case 'PPK':
                     res.render('poll/poker',setting);
                 break;
+                case 'INFO':
+                    res.render('poll/info',setting);
+                break;
                 default:
                     res.render('poll/nopoll',{title:'volavote',message:'POLL NOT FOUND'})
             }

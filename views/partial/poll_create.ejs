@@ -17,6 +17,7 @@
         <option value="TEXT" style="color:#666;">{{getMessage('freetext')}}</option>
         <option value="QUIZ" style="color:#666;">{{getMessage('quiz')}}</option>
         <option value="PPK" style="color:#666;">{{getMessage('planningpoker')}}</option>
+        <option value="INFO" style="color:#666;">{{getMessage('information')}}</option>
       </select>
     </div>
     <div v-if="pollType==='MULTI' || pollType==='SURVEY' || pollType==='QUIZ'">
@@ -37,7 +38,23 @@
           <option value="PARTY" style="color:#666;">XS,S,M,L,XL</option>
         </select>
       </div>
-  </div>
+    </div>
+
+    <div v-if="pollType==='INFO'">
+      <div class="make_input_field">
+        <div class="make_input_sub">{{getMessage('information_message')}}</div>
+        <input class="make_input make_input_2nd" type="text" :placeholder="getMessage('information_input_message')" v-model="pollDisplays[0]">
+      </div>
+      <div class="make_input_field">
+        <div class="make_input_sub">{{getMessage('information_timer')}}</div>
+        <input class="make_input make_input_2nd" type="number" :placeholder="getMessage('information_input_timer')" v-model="pollDisplays[1]">
+      </div>
+      <div class="make_input_field">
+        <input class="poll_answer_check" type="checkbox" id="showuser" value="false" v-model="showUserNum">
+        <label class="poll_answer" for="showuser">{{getMessage('information_connect_user')}}</label>
+      </div>
+    </div>
+
     <div v-if="(pollType!=='MAP') && (pollType!=='PPK')">
       <div class="make_input_field">
         <div class="make_input_sub">{{getMessage('option')}}</div>
@@ -109,6 +126,7 @@
         pollAnswerDigit:[],
         pollParent:'<%= name %>',
         planningPokerPattern:'',
+        showUserNum:false,
         createBy:'<%= type %>',
         userName:'<%= user %>',
         createVvid:'',
@@ -124,6 +142,12 @@
             freetext: "FreeText",
             quiz : "Quiz",
             planningpoker: "Planning Poker",
+            information: "Information Page",
+            information_message: "Message",
+            information_input_message: "Input Message",
+            information_timer: "Set Timer (nothing or 0 means no timer)",
+            information_input_timer: "Input timer minutes",
+            information_connect_user:"Show joined user number",
             number_of_choice: "Number of Choice",
             of_choice: "choice ",
             select_poker_pattern: "Select Poker Pattern",
@@ -155,6 +179,12 @@
             freetext: "自由記入",
             quiz : "クイズ",
             planningpoker: "プランニングポーカー",
+            information: "お知らせページ (非投票)",
+            information_message: "お知らせメッセージ（*任意）",
+            information_input_message: "メッセージを入力して下さい",
+            information_timer: "タイマー設定 (*任意)",
+            information_input_timer: "分を指定してください",
+            information_connect_user:"参加ユーザ数を表示する",
             number_of_choice: "選択肢の数を入力して下さい",
             of_choice: "選択肢 ",
             select_poker_pattern: "ポーカーのパターンを選択して下さい",
@@ -247,6 +277,14 @@
             this.pollErrorMessage = "Input Image URL"
             return
           }
+        }
+
+        if(this.pollType==='INFO'){
+          this.pollNumber = 3
+          if(isNaN(this.pollDisplays[1])){
+            this.pollDisplays[1] = 0
+          }
+          this.pollDisplays[2] = this.showUserNum
         }
 
         if(this.pollType==='PPK'){

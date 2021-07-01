@@ -1,0 +1,74 @@
+.info_title{
+    width:60%;
+    min-width:700px;
+    font-size: 54px;
+    margin:10px auto 20px auto;
+    text-align: center;
+}
+
+.info_message{
+    width:60%;
+    min-width:700px;
+    font-size: 42px;
+    margin:20px auto 50px auto;
+    text-align: center;
+}
+
+.info_timer{
+    width:250px;
+    font-family: 'Share Tech Mono', monospace;
+    color: #666;
+    text-shadow: 0 0 20px #999;
+    line-height: 1.2;
+    font-size:50px;
+    margin: 0 auto 30px auto;
+    padding: 20px 0px;
+    background-color: #EEE;
+}
+
+.alert{
+    color: #F66;
+    text-shadow: 0 0 20px #F99;
+    background-color: #FEE;
+}
+
+.info_user_block{
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.join_user_area{
+    width:60%;
+    min-width:700px;
+    margin:30px auto;
+}
+
+.join_user_text{
+    font-size: 24px;
+    color:#666;
+    margin-bottom: 20px;
+}
+
+@media screen and (max-width:700px){
+
+    .info_title{
+        width:95%;
+        min-width:initial;
+        font-size: 28px;
+    }
+
+    .info_message{
+        width:95%;
+        min-width:initial;
+        font-size: 24px;
+    }
+
+    .join_user_area{
+        width:95%;
+        min-width:initial;
+    }
+
+    .info_timer {
+        margin-top:30px;
+    }
+}
