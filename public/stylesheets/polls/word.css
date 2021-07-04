@@ -1,0 +1,50 @@
+.word_input_area{
+    display: inline-block;
+    margin:0px auto 0px auto;
+}
+
+.word_input{
+    height:36px;
+    width:250px;
+    font-size: 24px;
+    margin-right: 5px;
+    padding-left:20px;
+}
+
+.word_button{
+    height:40px;
+    font-size: 24px;
+    padding:0px 20px;
+    background-color: #CCF;
+    border: 1px solid #669;
+}
+
+.word_canvas{
+    margin: 50px auto;
+    border:1px solid #CCC;
+}
+
+.word_canvas_pc{
+    width:700px;
+    height:400px;
+}
+
+.word_canvas_sp{
+    width:350px;
+    height:200px;
+}
+
+
+@media screen and (max-width:700px){
+    .word_input{
+        width:200px;
+        font-size: 20px;
+        margin-right: 5px;
+        padding-left:20px;
+    }
+    
+    .word_button{
+        height:40px;
+        font-size: 20px;
+    }
+}

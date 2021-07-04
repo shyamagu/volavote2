@@ -12,13 +12,15 @@
     <title><%= title %></title>
     <!-- <script src="https://unpkg.com/vue@next"></script> -->
     <script src="https://unpkg.com/vue@3.1.1/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel='stylesheet' href='/stylesheets/poll.css' />
-    <link rel='stylesheet' href='/stylesheets/polls/text.css' />
+    <link rel='stylesheet' href='/stylesheets/polls/word.css' />
   </head>
   <body>
     <%- include('../partial/poll_header'); %>
+  
 
     <div id="poll" class="poll_body">
       <div class="poll_title">{{title}}</div>
@@ -26,10 +28,13 @@
         <img class="poll_image" v-bind:src="image">
       </div>
       <div v-if="lock!=='true'" class="text_input_area">
-        <div class="text_input_box"><textarea class="text_input" rows="3" v-model="postmessage"></textarea></div>
-        <div class="text_post_box"><button class="text_post_btn" @click="postMessage(postmessage)">{{getMessage('post')}}</button></div>
+        <div class="word_input_area">
+          <input class="word_input" type="text" v-model="word" :placeholder="getMessage('limit')">
+          <button class="word_button" @click="postMessage(word)">{{getMessage('post')}}</button>
+        </div>
       </div>
       <div v-if="errorMessage" class="error_message">{{errorMessage}}</div>
+      <canvas id='my_canvas' width="700" height="400" class="word_canvas" :class="{word_canvas_pc: over700, word_canvas_sp: !over700}"></canvas>
       <div class="text_list_area">
         <transition-group>
           <div class="text_list" :class="{emphasized: (emphasizedIndex===index-1)}" v-for="(msg,index) in messages" :key="msg.key">
@@ -38,13 +43,15 @@
             <div class="text_display_box" :class="{your_own: yourMessage.includes(msg.key)}"><div class="text_display">{{msg.key}}</div></div>
           </div>
         </transition-group>
+        </div>
       </div>
-    </div>
   </body>
   <script>
     const socket = io();
     var resizeTimer;
     const mediaQuery = window.matchMedia('(max-width: 700px)')
+    const max_wc_limit = 70
+    const min_wc_limit = 15
     const Poll = {
       data(){
         return{
@@ -55,21 +62,26 @@
           parent:'<%= parent %>',
           errorMessage:"",
           emphasizedIndex:-10,
-          postmessage:"",
+          word:"",
           messages:[],
           voted:[],
           yourMessage:[],
           lock:'<%= lock %>',
+          over700:true,
           message:{
-            en:{
-              post:"Post",
-              already:"This message was Already Posted",
-            },
-            ja:{
-              post:"投稿",
-              already:"既に投稿済みです",
-            },
-          }
+          en:{
+            post:"Post",
+            limit:"Within the 16 word limit",
+            already:"This message was Already Posted",
+            toolong:"Too long (within the 16 word limit)",
+          },
+          ja:{
+            post:"投稿",
+            limit:"全角８文字以内",
+            already:"既に投稿済みです",
+            toolong:"文字が長すぎます(全角8字以内)",
+          },
+        }
         }
       },
       mounted() {
@@ -83,15 +95,27 @@
         socket.on('pollCountUp',(countUp)=>{
           if(countUp.VVID===this.vvid){
 
-            let arr = Object.keys(countUp.COUNTUP).map((e)=>{return {key:e,value:countUp.COUNTUP[e]}})
+            if(!Object.keys(countUp.COUNTUP).length) return
+            let max_count = Object.values(countUp.COUNTUP).reduce((a,b)=>Math.max(a,b))
+            let arr = Object.keys(countUp.COUNTUP).map((e)=>{
+                if(max_count < 7){
+                  let size = countUp.COUNTUP[e]*10
+                  if(size < min_wc_limit) size = min_wc_limit
+                  return [e,size]
+                }else{
+                  let size = countUp.COUNTUP[e]*max_wc_limit/max_count
+                  if(size < min_wc_limit) size = min_wc_limit
+                  return [e,size]
+                }
+              })
             arr.sort(function(a,b){
-              if(a.value < b.value) return 1;
-              if(a.value > b.value) return -1;
+              if(a[1] < b[1]) return 1;
+              if(a[1] > b[1]) return -1;
               return 0;
             })
-            this.messages = arr
 
             this.resizePoll()
+            this.setWordCloud(Object.values(arr))
           }
         })
         socket.on('emphasizeVote',(emphasizeData)=>{
@@ -109,17 +133,38 @@
         getMessage(key){
           return this.message[this.locale]? this.message[this.locale][key] : this.message['en'][key]
         },
+        setWordCloud(list){
+          WordCloud(document.getElementById('my_canvas'), 
+            { list: list, 
+              "weightFactor":1,
+              "rotateRatio": 0,
+              "ellipticity": 1.5,
+              drawOutOfBound:true,
+              color:'random-dark',
+              fontFmily:'Meiryo UI, Segoe UI',
+              click:(item,dimentsion,event)=>{this.vote(item[0])}
+            });
+        },
         resizePoll(){
           if (mediaQuery.matches) {
+            this.over700 = false
           }else{
+            this.over700 = true
           }
         },
-        postMessage(postmessage){
-          if(postmessage){
-            this.vote(postmessage)
+        postMessage(word){
+          String.prototype.bytes = function () {
+            return(encodeURIComponent(this).replace(/%../g,"x").length);
+          }
+          if(word){
+            if(word.bytes()>24){
+              this.errorMessage = this.getMessage('toolong')
+            }else{
+              this.vote(word)
+            }
           }
         },
-        vote(postmessage){          
+        vote(word){          
           this.errorMessage = ""
 
           if(this.lock==="true"){
@@ -127,12 +172,12 @@
             return
           }
 
-          if(this.yourMessage.includes(postmessage)){
+          if(this.yourMessage.includes(word)){
             this.errorMessage = this.getMessage('already')
             return
           }
 
-          const vote = {vvid:this.vvid, vote:postmessage}
+          const vote = {vvid:this.vvid, vote:word}
           fetch("/poll/vote",{
             method:'POST',
             headers:{'Content-Type':'application/json'},
@@ -141,8 +186,8 @@
           .then(response=>response.json())
           .then(data=>{
             if(data.result==="OK"){
-              this.yourMessage.push(postmessage)
-              this.postmessage = ""
+              this.yourMessage.push(word)
+              this.word = ""
             }
             else if(data.result==="NG"){
               this.errorMessage = data.error

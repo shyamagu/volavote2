@@ -15,6 +15,7 @@
         <option value="SURVEY" style="color:#666;">{{getMessage('survey')}}</option>
         <option value="MAP" style="color:#666;">{{getMessage('map')}}</option>
         <option value="TEXT" style="color:#666;">{{getMessage('freetext')}}</option>
+        <option value="WORD" style="color:#666;">{{getMessage('wordcloud')}}</option>
         <option value="QUIZ" style="color:#666;">{{getMessage('quiz')}}</option>
         <option value="PPK" style="color:#666;">{{getMessage('planningpoker')}}</option>
         <option value="INFO" style="color:#666;">{{getMessage('information')}}</option>
@@ -80,7 +81,7 @@
       </div>
     </div>
 
-    <div v-if="pollType ==='MAP' || pollType ==='TEXT'" class="make_input_field">
+    <div v-if="pollType ==='MAP' || pollType ==='TEXT' || pollType == 'WORD'" class="make_input_field">
       <select class="poll_select" v-model="pollConstraint">
         <option value="SINGLE">{{getMessage('onevote_oneperson')}}</option>
         <option value="MULTI">{{getMessage('nvote_oneperson')}}</option>
@@ -139,7 +140,8 @@
             multi: "Multiple",
             survey: "Survey",
             map : "Map",
-            freetext: "FreeText",
+            freetext: "Free Text",
+            wordcloud: "Word Cloud",
             quiz : "Quiz",
             planningpoker: "Planning Poker",
             information: "Information Page",
@@ -177,6 +179,7 @@
             survey: "評価",
             map : "地図",
             freetext: "自由記入",
+            wordcloud: "ワードクラウド",
             quiz : "クイズ",
             planningpoker: "プランニングポーカー",
             information: "お知らせページ (非投票)",

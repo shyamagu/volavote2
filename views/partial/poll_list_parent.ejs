@@ -38,6 +38,9 @@
             <option v-for="n of Object.keys(countupPoll.COUNTUP).length" v-bind:value="n-1">{{n}}</option>
           </select>
         </span>
+        <span class="pli_one_result" v-if="countupPoll.TYPE==='WORD'">
+          {{Object.keys(countupPoll.COUNTUP).length}} words
+        </span>
       </div>
       <div class="poll_list_item pli_parent_f">
         <span v-if="countupPoll.PARENT">{{countupPoll.PARENT}} {{countupPoll.USER? '('+countupPoll.USER+')': ''}}</span>

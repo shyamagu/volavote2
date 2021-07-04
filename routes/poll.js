@@ -77,6 +77,9 @@ module.exports = function(io) {
                 case 'TEXT':
                     res.render('poll/text',setting);
                 break;
+                case 'WORD':
+                    res.render('poll/wordcloud',setting);
+                break;
                 case 'QUIZ':
                     res.render('poll/quiz',setting);
                 break;

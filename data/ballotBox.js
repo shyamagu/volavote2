@@ -148,7 +148,7 @@ class BallotBox {
                 returnBox["COUNTUP"].push(result[key])
             }
 
-        }else if(pollResult.TYPE === "TEXT"){
+        }else if(pollResult.TYPE === "TEXT" || pollResult.TYPE === "WORD"){
             returnBox["COUNTUP"]={}
             let result = pollResult["RESULT"]
             for(let key in result){
