@@ -60,7 +60,7 @@ router.get('/', function(req, res, next) {
     message3_sub = 
       `
       volavote は OSS なアプリケーションですが、<a href="https://hub.docker.com/r/shyamagu/volavote" target="_blank">Docker イメージ</a>も公開しています。 
-      もしくは <a href="https://github.com/shyamagu/volavote" target="_blank">GitHub のリポジトリ</a> からソースコードを クローンしてお好きにデプロイしてください。
+      もしくは <a href="https://github.com/shyamagu/volavote2" target="_blank">GitHub のリポジトリ</a> からソースコードを クローンしてお好きにデプロイしてください。
       面倒なデータベース設定などは不要です。
       volavote は揮発性のアプリケーションのため、永続的なデータストアは必要ありません。（その代わりサーバダウンとともにデータは失われます）
       `
