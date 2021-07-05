@@ -143,7 +143,12 @@ module.exports = function(io) {
                 pollCode = process.env.POLL_CODE? process.env.POLL_CODE: ""
             }
 
-            res.render('poll/qr',{title:poll.TITLE,url:fullurl,code:pollCode,parent:poll.PARENT,parent_code:userTable.getParent(poll.PARENT).requireParentCode})
+            let parentCode = ""
+            if(userTable.getParent(poll.PARENT)){
+                parentCode = userTable.getParent(poll.PARENT).requireParentCode
+            }
+
+            res.render('poll/qr',{title:poll.TITLE,url:fullurl,code:pollCode,parent:poll.PARENT,parent_code:parentCode})
         }else{
             res.render('poll/nopoll',{title:'volavote',message:'QR NOT FOUND'})
         }
