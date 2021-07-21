@@ -23,6 +23,9 @@ if(!process.env.REQUIRE_CODE){
 if(!process.env.REQUIRE_NAME){
   process.env.REQUIRE_NAME='false'
 }
+if(!process.env.POLL_CODE){
+  process.env.POLL_CODE=''
+}
 
 var app = express();
 app.use(session({
