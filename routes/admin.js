@@ -21,7 +21,7 @@ module.exports = function(io) {
   router.get('/signout',function(req,res,next){
       if(req.session.ADMIN){
         req.session.ADMIN = ""
-        res.render('poll/nopoll',{title:'volavote',message:'SIGH OUTED'})
+        res.render('poll/nopoll',{title:'volavote',message:'SIGNED OUT'})
       }else{
         res.render('poll/nopoll',{title:'volavote',message:'INVALID ACCESS'})
       }
