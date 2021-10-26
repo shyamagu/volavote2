@@ -124,7 +124,7 @@ module.exports = function(io) {
                 }
                 res.json({result:"OK"})
             }else{
-                res.json({result:"NG",error:"LOCKED"})
+                res.json({result:"NG",error:"POLL CLOSED"})
             }
         }else{
         res.json({result:"NG",error:"NO SUCH POLL"})

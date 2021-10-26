@@ -115,7 +115,7 @@
         vote(index){
           if(this.lock==="true"){
             this.voted = new Array(this.number).fill(0)
-            this.errorMessage = "LOCKED"
+            this.errorMessage = "POLL CLOSED"
             return
           }
           this.errorMessage = ""
